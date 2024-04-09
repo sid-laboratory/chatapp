@@ -10,8 +10,13 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.29.12",
+    "@hookform/resolvers": "^3.3.4",
+    "@prisma/client": "^5.9.1",
+    "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-slot": "^1.0.2",
+    "@uploadthing/react": "^6.4.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lucide-react": "^0.365.0",
@@ -19,9 +24,11 @@
     "next-themes": "^0.3.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-hook-form": "^7.51.2",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
-    "@prisma/client": "^5.9.1"
+    "uploadthing": "^6.8.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20",

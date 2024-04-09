@@ -1,20 +1,38 @@
 "use client";
-
-import { FileIcon, X } from "lucide-react";
+import { AlertCircle, FileIcon, X } from "lucide-react";
 import Image from "next/image";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { UploadDropzone } from "@/lib/uploadthing";
-
 import "@uploadthing/react/styles.css";
-
+import { useCallback, useEffect, useState } from "react";
+import { create } from "domain";
+import { ourFileRouter } from "../app/api/uploadthing/core";
+import { createRouteHandler } from "uploadthing/next";
 interface FileUploadProps {
   onChange: (url?: string) => void;
   value: string;
   endpoint: "messageFile" | "serverImage";
 }
-
 export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
+  const [uploadError, setUploadError] = useState(""); // State to track upload error
+
   const fileType = value?.split(".").pop();
+
+  // Handle upload error
+  const handleUploadError = (error: Error) => {
+    setUploadError(
+      `File size is huge.Please upload a file that is less than 4MB.`
+    );
+    setTimeout(() => {
+      window.location.reload();
+    }, 3000);
+  };
+
+  // Clear upload error
+  const clearUploadError = () => {
+    setUploadError("");
+  };
 
   if (value && fileType !== "pdf") {
     return (
@@ -55,14 +73,23 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
   }
 
   return (
-    <UploadDropzone
-      endpoint={endpoint}
-      onClientUploadComplete={(res) => {
-        onChange(res?.[0].url);
-      }}
-      onUploadError={(error: Error) => {
-        console.log(error);
-      }}
-    />
+    <>
+      {uploadError && ( // Conditionally render alert if upload error exists
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle className="text-center">Error</AlertTitle>
+          <AlertDescription>{uploadError}</AlertDescription>
+        </Alert>
+      )}
+      <UploadDropzone
+        className="bg-slate-100 ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 border-2 border-dashed border-slate-400 rounded-md p-4 mt-2"
+        endpoint={endpoint}
+        onClientUploadComplete={(res) => {
+          onChange(res?.[0].url);
+          clearUploadError(); // Clear upload error on successful upload
+        }}
+        onUploadError={handleUploadError} // Pass handleUploadError function
+      />
+    </>
   );
 };

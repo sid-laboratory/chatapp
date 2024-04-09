@@ -1,5 +1,6 @@
 "use client";
 import * as z from "zod";
+import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -87,6 +88,7 @@ export const InitialModal = () => {
                             onChange={field.onChange}
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />

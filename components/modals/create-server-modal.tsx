@@ -26,6 +26,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useModal } from "@/hooks/use-modal-store";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -36,13 +37,16 @@ const formSchema = z.object({
   }),
 });
 
-export const InitialModal = () => {
-  const [Mounted, isMounted] = useState(false);
+export const CreateServerModal = () => {
+  const { isOpen, type, onClose } = useModal();
+  // const [Mounted, isMounted] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    isMounted(true);
-  }, []);
+  const isModalOpen = isOpen && type === "createServer";
+
+  // useEffect(() => {
+  //   isMounted(true);
+  // }, []);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -60,18 +64,24 @@ export const InitialModal = () => {
 
       form.reset();
       router.refresh();
-      window.location.reload();
+      onClose();
     } catch (error) {
       console.log(error);
     }
   };
 
-  if (!Mounted) {
-    return null;
-  }
+  // if (!Mounted) {
+  //   return null;
+  // }
+
+  const handleClose = () => {
+    form.reset();
+    onClose();
+  };
+
   return (
     <>
-      <Dialog open>
+      <Dialog open={isModalOpen} onOpenChange={handleClose}>
         <DialogContent className="bg-white text-black p-0 overflow-hidden">
           <DialogHeader className="pt-8 px-6">
             <DialogTitle className="text-2xl text-center font-bold">

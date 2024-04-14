@@ -6,8 +6,9 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { cn } from "@/lib/utils";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
-
+import { Toaster } from "@/components/ui/toaster";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
+import { ModalProvider } from "@/components/providers/modal-provider";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -27,7 +28,7 @@ export default function RootLayout({
         <body
           className={cn(
             font.className,
-            "bg-emerald-500 dark:bg-gradient-to-r from-slate-900 to-slate-700"
+            "bg-[#DEE4E7] dark:bg-gradient-to-r from-slate-900 to-slate-700"
           )}
         >
           <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
@@ -37,7 +38,9 @@ export default function RootLayout({
             enableSystem={false}
             storageKey="app-theme"
           >
+            <ModalProvider />
             {children}
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>

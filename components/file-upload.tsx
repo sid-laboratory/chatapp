@@ -1,8 +1,9 @@
 "use client";
+
 import { AlertCircle, FileIcon, X } from "lucide-react";
 import Image from "next/image";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
+import { useToast } from "@/components/ui/use-toast";
 import { UploadDropzone } from "@/lib/uploadthing";
 import "@uploadthing/react/styles.css";
 import { useCallback, useEffect, useState } from "react";
@@ -15,7 +16,9 @@ interface FileUploadProps {
   endpoint: "messageFile" | "serverImage";
 }
 export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
-  const [uploadError, setUploadError] = useState(""); // State to track upload error
+  const { toast } = useToast();
+  const [uploadError, setUploadError] = useState("");
+  const [onUploadSuccess, setOnUploadSuccess] = useState(false);
 
   const fileType = value?.split(".").pop();
 
@@ -29,6 +32,14 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
     }, 3000);
   };
 
+  const callToast = () => {
+    toast({
+      variant: "success",
+      title: "SUCCESS!",
+      description: "Image uploaded successfully",
+    });
+  };
+
   // Clear upload error
   const clearUploadError = () => {
     setUploadError("");
@@ -40,7 +51,7 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
         <Image fill src={value} alt="Upload" className="rounded-full" />
         <button
           onClick={() => onChange("")}
-          className="bg-rose-500 text-white p-1 rounded-full absolute top-0 right-0 shadow-sm"
+          className="bg-rose-500 text-white p-1 rounded-full absolute top-0 right-0 "
           type="button"
         >
           <X className="h-4 w-4" />
@@ -52,6 +63,7 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
   if (value && fileType === "pdf") {
     return (
       <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
+        <p>hello</p>
         <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
         <a
           href={value}
@@ -86,9 +98,11 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
         endpoint={endpoint}
         onClientUploadComplete={(res) => {
           onChange(res?.[0].url);
-          clearUploadError(); // Clear upload error on successful upload
+          setOnUploadSuccess(true);
+          callToast();
+          clearUploadError();
         }}
-        onUploadError={handleUploadError} // Pass handleUploadError function
+        onUploadError={handleUploadError}
       />
     </>
   );

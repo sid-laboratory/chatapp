@@ -26,6 +26,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import { Label } from "@/components/ui/label";
 import { Check, Copy, RefreshCw } from "lucide-react";
 import { UseOrigin } from "@/hooks/use-origin";
+import "./selection.css";
 
 export const InviteModal = () => {
   const { onOpen, isOpen, type, onClose, data } = useModal();
@@ -50,6 +51,7 @@ export const InviteModal = () => {
       const response = await axios.patch(
         `/api/servers/${server?.id}/invite-code`
       );
+
       if (!response) {
         throw new Error("Failed to generate invite link");
       }
@@ -76,12 +78,18 @@ export const InviteModal = () => {
             <Label className=" uppercase text-xs font-semibold text-neutral-700 dark:text-neutral-700">
               Server Invite Link
             </Label>
-            <div className="flex items-center mt-2 gap-x-2 mb-5 ">
+            <div className="flex items-center mt-2 gap-x-2 mb-5">
               <Input
-                className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+                className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0 outline-none focus:ring-0"
                 value={inviteUrl}
+                disabled={isLoading}
               />
-              <Button className="" size="icon" onClick={handleCopy}>
+              <Button
+                disabled={isLoading}
+                className=""
+                size="icon"
+                onClick={handleCopy}
+              >
                 {copied ? <Check /> : <Copy />}
               </Button>
             </div>

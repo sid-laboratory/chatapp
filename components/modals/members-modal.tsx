@@ -1,5 +1,6 @@
 "use client";
-import qs from "query-sring";
+import { useToast } from "@/components/ui/use-toast";
+import qs from "query-string";
 import {
   Dialog,
   DialogContent,
@@ -46,12 +47,39 @@ import {
   ShieldQuestion,
 } from "lucide-react";
 import { MemberRole } from "@prisma/client";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export const MemberModal = () => {
+  const { toast } = useToast();
+  const router = useRouter();
+
   const RoleIconMap = {
     GUEST: "👤",
     MODERATOR: "🛠️",
     ADMIN: "🛡️",
+  };
+
+  const callToast = (type: "kick" | "mod" | "guest") => {
+    if (type === "kick") {
+      toast({
+        variant: "success",
+        title: "SUCCESS!",
+        description: "Member kicked out of the server successfully",
+      });
+    } else if (type === "guest") {
+      toast({
+        variant: "destructive",
+        title: "Degrade!",
+        description: "Member degraded to guest",
+      });
+    } else {
+      toast({
+        variant: "success",
+        title: "Upgrade!",
+        description: "Member upgraded to moderator",
+      });
+    }
   };
 
   const { onOpen, isOpen, type, onClose, data } = useModal();
@@ -65,6 +93,42 @@ export const MemberModal = () => {
   const onRoleChange = async (role: MemberRole, memberId: string) => {
     try {
       setLoadingId(memberId);
+
+      const url = qs.stringifyUrl({
+        url: `/api/members/${memberId}`,
+        query: {
+          serverId: server?.id,
+          memberId,
+        },
+      });
+
+      const response = await axios.patch(url, { role });
+
+      router.refresh();
+      onOpen("member", { server: response.data });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingId("");
+    }
+    const memberRole = role === "GUEST" ? "guest" : "mod";
+    callToast(memberRole);
+  };
+
+  const onKick = async (memberId: string) => {
+    try {
+      setLoadingId(memberId);
+      const url = qs.stringifyUrl({
+        url: `/api/members/${memberId}`,
+        query: {
+          serverId: server?.id,
+          memberId,
+        },
+      });
+      const response = await axios.delete(url);
+      router.refresh();
+      onOpen("member", { server: response.data });
+      callToast("kick");
     } catch (error) {
       console.log(error);
     } finally {
@@ -126,14 +190,22 @@ export const MemberModal = () => {
                             </DropdownMenuSubTrigger>
                             <DropdownMenuPortal>
                               <DropdownMenuSubContent>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    onRoleChange("GUEST", member.id)
+                                  }
+                                >
                                   <Shield className="w-4 h-4 mr-2" />
                                   Guest
                                   {member.role === "GUEST" && (
                                     <Check className="h-4 w-4 ml-auto " />
                                   )}
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    onRoleChange("MODERATOR", member.id)
+                                  }
+                                >
                                   <ShieldCheck className="w-4 h-4 mr-2" />
                                   Moderator
                                   {member.role === "MODERATOR" && (
@@ -144,7 +216,7 @@ export const MemberModal = () => {
                             </DropdownMenuPortal>
                           </DropdownMenuSub>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => onKick(member.id)}>
                             <Gavel className="w-4 h-4 mr-2" />
                             Kick
                           </DropdownMenuItem>

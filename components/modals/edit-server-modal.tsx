@@ -27,6 +27,9 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Terminal } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -38,7 +41,9 @@ const formSchema = z.object({
 });
 
 export const EditServerModal = () => {
+  const { toast } = useToast();
   const { isOpen, type, onClose, data } = useModal();
+  const [edited, setEdited] = useState(false);
   // const [Mounted, isMounted] = useState(false);
   const router = useRouter();
 
@@ -64,13 +69,22 @@ export const EditServerModal = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.patch(`/api/servers/${server?.id}`, values);
-
+      setEdited(true);
       form.reset();
       router.refresh();
       onClose();
+      callToast();
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const callToast = () => {
+    toast({
+      variant: "success",
+      title: "SUCCESS!",
+      description: "Server updated successfully",
+    });
   };
 
   // if (!Mounted) {

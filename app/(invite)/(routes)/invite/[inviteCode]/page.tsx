@@ -1,8 +1,8 @@
+import { useModal } from "@/hooks/use-modal-store";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { redirectToSignIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-
 interface InviteCodePageProps {
   params: {
     inviteCode: string;
@@ -31,7 +31,7 @@ const InviteCodePage = async ({ params }: InviteCodePageProps) => {
   });
 
   if (existingServer) {
-    return redirect("/servers/" + existingServer.id);
+    return redirect("/server/" + existingServer.id);
   }
 
   const server = await db.server.update({
@@ -49,9 +49,13 @@ const InviteCodePage = async ({ params }: InviteCodePageProps) => {
     },
   });
 
+  if (server) {
+    return redirect("/server/" + server.id);
+  }
+
   return (
     <>
-      <div>Hello from new server!</div>
+      <div>asd</div>
     </>
   );
 };

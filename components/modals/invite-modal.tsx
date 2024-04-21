@@ -45,22 +45,6 @@ export const InviteModal = () => {
     }, 1000);
   };
 
-  const onNew = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.patch(
-        `/api/servers/${server?.id}/invite-code`
-      );
-
-      if (!response) {
-        throw new Error("Failed to generate invite link");
-      }
-    } catch (error) {
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const inviteUrl = `${origin}/invite/${server?.inviteCode}`;
   return (
     <>

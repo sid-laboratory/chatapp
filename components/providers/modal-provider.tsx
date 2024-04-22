@@ -6,6 +6,9 @@ import { InviteModal } from "@/components/modals/invite-modal";
 import { useModal } from "@/hooks/use-modal-store";
 import { EditServerModal } from "@/components/modals/edit-server-modal";
 import { MemberModal } from "../modals/members-modal";
+import { CreateChannelModal } from "@/components/modals/create-channel-modal";
+import { LeaveServer } from "@/components/modals/leave-server-modal";
+import { DeleteServer } from "@/components/modals/delete-server-modal";
 
 export const ModalProvider = () => {
   const { isOpen, type, onClose } = useModal();
@@ -22,6 +25,9 @@ export const ModalProvider = () => {
       {type === "invite" && <InviteModal />}
       {type === "editServer" && <EditServerModal />}
       {type === "member" && <MemberModal />}
+      {type === "channel" && <CreateChannelModal />}
+      {type === "leaveServer" && <LeaveServer />}
+      {type === "deleteServer" && <DeleteServer />}
     </>
   );
 };

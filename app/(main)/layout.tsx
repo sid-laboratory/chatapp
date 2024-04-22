@@ -1,4 +1,5 @@
 import NavigationSideBar from "@/components/navigation/navigation-sidebar";
+import { Toaster } from "@/components/ui/toaster";
 
 const MainLayout = async ({ children }: { children: React.ReactNode }) => {
   return (

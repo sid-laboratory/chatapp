@@ -93,7 +93,7 @@ export const MemberModal = () => {
   const onRoleChange = async (role: MemberRole, memberId: string) => {
     try {
       setLoadingId(memberId);
-
+      console.log("this is server info ", server, server?.name);
       const url = qs.stringifyUrl({
         url: `/api/members/${memberId}`,
         query: {

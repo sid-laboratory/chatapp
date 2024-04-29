@@ -3,8 +3,6 @@ import * as z from "zod";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Dialog,
   DialogContent,
@@ -51,13 +49,14 @@ const formSchema = z.object({
   type: z.nativeEnum(ChannelType),
 });
 
-export const CreateChannelModal = () => {
-  const { isOpen, type, onClose } = useModal();
+export const EditChannel = () => {
+  const { isOpen, type, onClose, data } = useModal();
   // const [Mounted, isMounted] = useState(false);
+  const { channel, server } = data;
   const params = useParams();
   const router = useRouter();
 
-  const isModalOpen = isOpen && type === "channel";
+  const isModalOpen = isOpen && type === "editChannel";
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -71,19 +70,20 @@ export const CreateChannelModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      if (values.name?.length > 12) {
-        alert("Channel name should be less than 12 characters");
+      if (values.name?.length > 15) {
+        alert("Channel name should be less than 10 characters");
         return;
       }
-
       const url = queryString.stringifyUrl({
-        url: "/api/channels",
-        query: { server: params?.serverId },
+        url: `/api/channels/${channel?.id}/edit`,
+        query: { serverId: params?.serverId },
       });
-      axios.post(url, values);
+      axios.patch(url, values);
       form.reset();
       onClose();
 
+      router.refresh();
+      router.refresh();
       router.refresh();
     } catch (error) {
       console.log(error);
@@ -101,7 +101,7 @@ export const CreateChannelModal = () => {
         <DialogContent className="bg-white text-black p-0 overflow-hidden">
           <DialogHeader className="pt-8 px-6">
             <DialogTitle className="text-2xl text-center font-bold">
-              Create your own Channel
+              Edit your Channel
             </DialogTitle>
           </DialogHeader>
 
@@ -113,8 +113,8 @@ export const CreateChannelModal = () => {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="uppercase text-sx font-bold text-stone-800 dark:white">
-                        Channel name (at max 12 char)
+                      <FormLabel className=" bold uppercase text-sx font-bold text-stone-800 dark:white">
+                        Channel name (at max 10 char)
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -163,7 +163,7 @@ export const CreateChannelModal = () => {
 
               <DialogFooter className="bg-gray-100 px-6 py-4">
                 <Button disabled={isLoading} variant="primary">
-                  Create
+                  Edit
                 </Button>
               </DialogFooter>
             </form>
